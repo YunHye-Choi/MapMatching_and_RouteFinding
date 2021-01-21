@@ -6,15 +6,16 @@ import org.knowm.xchart.XYChart;
 import javax.swing.SwingWorker;*/
 
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
 public class Main {
-
     private static Emission emission = new Emission();
     private static Transition transition = new Transition();
+    private static int wSize = 3; //윈도사이즈는 3!!!!!!
     //MySwingWorker mySwingWorker;
     /*그림 그려 주는 tool
     private static SwingWrapper<XYChart> sw;
@@ -78,10 +79,12 @@ public class Main {
 
         // window size만큼의 t-window, ... , t-1, t에서의 candidates의 arrayList
         ArrayList<ArrayList<Candidate>> arrOfCandidates = new ArrayList<>();
-
+        ArrayList<GPSPoint> subGPSs = new ArrayList<>();
+        // ArrayList<Point> subRPA = new ArrayList<>(); // 비터비 내부 보려면 이것도 주석 해제해야! (subRoadPointArrayList)
         // GPSPoints 생성
         int timestamp = 0;
         //System.out.println("여기부터 생성된 gps point~~");
+        System.out.println("Fixed Sliding Window Viterbi (window size: 3)");
         for (Point point : routePointArrayList) {
             GPSPoint gpsPoint = new GPSPoint(timestamp, point);
             gpsPointArrayList.add(gpsPoint);
@@ -89,7 +92,6 @@ public class Main {
             //System.out.println(gpsPoint); //gps point 제대로 생성 되는지 확인차 넣음
             ArrayList<Candidate> candidates = new ArrayList<>();
             candidates.addAll(findRadiusCandidate(gpsPointArrayList, matchingCandiArrayList, gpsPoint.getPoint(), 20, roadNetwork, timestamp));
-            arrOfCandidates.add(candidates);
 
             /////////matching print/////////////
             //System.out.println("매칭완료 " + matchingPointArrayList.get(timestamp-1));
@@ -102,23 +104,36 @@ public class Main {
             }
             //median값 저장
 
-
-
+            ///////////// FSW VITERBI /////////////
+            subGPSs.add(gpsPoint);
+            arrOfCandidates.add(candidates);
+            // subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
+            if (subGPSs.size() == wSize) {
+                FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, subGPSs, tp_matrix); // 윤혜tp 비터비
+                FSWViterbi.generateMatched_sjtp(wSize, arrOfCandidates, gpsPointArrayList, transition, timestamp, roadNetwork); // 세정tp로 비터비
+                subGPSs.clear();
+                arrOfCandidates.clear();
+                // subRPA.clear(); // 비터비 내부 보려면 이것도 주석 해제해야!
+                subGPSs.add(gpsPoint);
+                arrOfCandidates.add(candidates);
+                // subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
+            }
+            ///////////////////////////////////////
         }
-        ///////////// FSW VITERBI /////////////
-        // window size 입력받기
-        System.out.println("Fixed Sliding Window Viterbi (window size: 3)");
-        int wSize = 3; // window size;
-
-        //yhtp 이용한 FSW Viterbi
-        FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, routePointArrayList, gpsPointArrayList, tp_matrix);
-
         // yhtp 이용해서 구한 subpath 출력
         FSWViterbi.printSubpath_yhtp (wSize);
+
+        // sjtp 이용해서 구한 subpath 출력
+        FSWViterbi.printSubpath_sjtp (wSize);
 
         // origin->생성 gps-> yhtp 이용해서 구한 matched 출력 및 정확도 확인
         FSWViterbi.test_data2_yhtp(routePointArrayList, gpsPointArrayList);
 
+        // origin->생성 gps-> sjtp 이용해서 구한 matched 출력 및 정확도 확인
+        FSWViterbi.test_data2_sjtp(routePointArrayList, gpsPointArrayList);
+
+        // 윤혜tp와 세정tp비교!
+        FSWViterbi.compareYhtpAndSjtp();
     }
 
     public static Double coordDistanceofPoints(Point a, Point b) {

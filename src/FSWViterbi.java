@@ -12,17 +12,17 @@ public class FSWViterbi {
 
     // gps 받아올때마다 FSW비터비로 매칭하는 메서드 -윤혜tp
     public static void generateMatched_yhtp(int wSize, ArrayList<ArrayList<Candidate>> arrOfCandidates,
-                                            ArrayList<GPSPoint> subGPSs, double[][] tp_matrix) {
+                                            /*ArrayList<GPSPoint> subGPSs,*/ double[][] tp_matrix) {
         // arrOfCandidates를 순회하며 찾은 path의 마지막을 matching_success에 추가하는 loop
         // t는 timestamp를 의미
         // subpath 생성 및 matched arraylist에 저장
         // 현재 candidates와 다음 candidates로 가는 t.p와 e.p곱 중 최대 값을 가지는 curr와 그 index를 maximum_tpep[현재]에 저장
         double maximum_prob = 0;
         Candidate[] subpath = new Candidate[wSize-1]; // path의 길이를 t로 설정
-        for (int i = 0; i < subGPSs.size() - 1; i++) { // i moves in window
+        for (int i = 0; i < wSize - 1; i++) { // i moves in window
             ArrayList<Candidate> curr_candidates = arrOfCandidates.get(i);
             ArrayList<Candidate> next_candidates = arrOfCandidates.get(i+1);
-            //System.out.println("☆origin point:" + subRPA.get(i+1));// 테스트 하려면 메서드 인자에 subGPS추가해야함
+            //System.out.println("☆origin point:" + subRPA.get(i+1));// 테스트 하려면 메서드 인자에 subGPSs추가해야함
             //System.out.println("☆GPS point: " + subGPSs.get(i));// 테스트 하려면 메서드 인자에 subRPA추가해야함
             // 다음 candidate를 하나씩 순회
             for (Candidate nc : next_candidates) {
@@ -62,7 +62,7 @@ public class FSWViterbi {
         // 마지막 candidates 중 acc_prob가 가장 높은 것 max_last_candi에 저장
         Candidate max_last_candi = new Candidate();
         double max_prob = 0;
-        for (Candidate candidate : arrOfCandidates.get(subGPSs.size() - 1)) {
+        for (Candidate candidate : arrOfCandidates.get(wSize - 1)) {
             if (max_prob < candidate.getAcc_prob()) {
                 max_prob = candidate.getAcc_prob();
                 max_last_candi = candidate;

@@ -109,7 +109,7 @@ public class Main {
             arrOfCandidates.add(candidates);
             // subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
             if (subGPSs.size() == wSize) {
-                FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, subGPSs, tp_matrix); // 윤혜tp 비터비
+                FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, tp_matrix); // 윤혜tp 비터비
                 FSWViterbi.generateMatched_sjtp(wSize, arrOfCandidates, gpsPointArrayList, transition, timestamp, roadNetwork); // 세정tp로 비터비
                 subGPSs.clear();
                 arrOfCandidates.clear();

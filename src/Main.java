@@ -109,9 +109,6 @@ public class Main {
         // window size 입력받기
         System.out.println("Fixed Sliding Window Viterbi (window size: 3)");
         int wSize = 3; // window size;
-        System.out.print("Test version: [1] using sj tp, [2] using yh tp: ");
-        Scanner sc = new Scanner (System.in);
-        int testVer = sc.nextInt();
 
         //yhtp 이용한 FSW Viterbi
         FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, routePointArrayList, gpsPointArrayList, tp_matrix);

@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 public class Candidate {
     private Point point;
     private Link involvedLink;
@@ -101,4 +103,52 @@ public class Candidate {
     public String toStringOnlyPoint() {
         return point.toString();
     }
+    public static ArrayList<Candidate> findRadiusCandidate(ArrayList<GPSPoint> gpsPointArrayList,
+                                                           ArrayList<Candidate> matchingPointArrayList, Point center,
+                                                           Integer Radius, RoadNetwork roadNetwork, int timestamp,
+                                                           Emission emission, Transition transition) {
+        ArrayList<Candidate> resultCandidate = new ArrayList<>();
+        for (int i = 0; i < roadNetwork.linkArrayList.size(); i++) {
+            double startX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getX();
+            double startY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getY();
+            double endX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getX();
+            double endY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getY();
+
+            Vector2D vectorFromStartToCenter = new Vector2D(center.getX() - startX, center.getY() - startY);
+            Vector2D vectorFromEndToCenter = new Vector2D(center.getX() - endX, center.getY() - endY);
+            Vector2D vectorFromEndToStart = new Vector2D(startX - endX, startY - endY);
+
+            double dotProduct1 = vectorFromStartToCenter.dot(vectorFromEndToStart);
+            double dotProduct2 = vectorFromEndToCenter.dot(vectorFromEndToStart);
+
+            if (dotProduct1 * dotProduct2 <= 0) {
+                //System.out.println("어허");
+                //System.out.println("dot Product : "+dotProduct1+", "+dotProduct2);
+                Candidate candidate = new Candidate();
+                candidate.setInvolvedLink(roadNetwork.linkArrayList.get(i));
+                Vector2D vectorStart = new Vector2D(startX, startY);
+                Vector2D vectorC = new Vector2D(center.getX(), center.getY()); //원점에서 시작해 center로의 vector
+                Vector2D vectorH = vectorStart.getAdded(vectorFromEndToStart.getMultiplied(
+                        (vectorC.getSubtracted(vectorStart).dot(vectorFromEndToStart))
+                                / Math.pow(vectorFromEndToStart.getLength(), 2))); //원점에서 시작해 수선의 발로의 vector
+                candidate.setPoint(new Point(vectorH.getX(), vectorH.getY())); //수선의 발 vector의 x와 y값을 candidate의 point로 대입
+                if (Main.coordDistanceofPoints(center, candidate.getPoint()) > Radius) continue;
+                resultCandidate.add(candidate);
+//////////////////////////////////////////
+                //candidate마다 ep, tp 구하기
+                Main.calculationEP(candidate, center, timestamp);
+                Main.calculationTP(candidate, matchingPointArrayList, center, gpsPointArrayList, timestamp, roadNetwork);
+
+                for (Candidate c: matchingPointArrayList) {
+                    emission.Emission_Median(c);
+                    transition.Transition_Median(c);
+                }
+
+            }
+        }
+        Main.calculationEPTP(resultCandidate, matchingPointArrayList, timestamp);
+
+        return resultCandidate;
+    }
+
 }

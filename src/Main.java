@@ -91,7 +91,8 @@ public class Main {
             timestamp++;
             //System.out.println(gpsPoint); //gps point 제대로 생성 되는지 확인차 넣음
             ArrayList<Candidate> candidates = new ArrayList<>();
-            candidates.addAll(findRadiusCandidate(gpsPointArrayList, matchingCandiArrayList, gpsPoint.getPoint(), 20, roadNetwork, timestamp));
+            candidates.addAll(Candidate.findRadiusCandidate(gpsPointArrayList, matchingCandiArrayList,
+                    gpsPoint.getPoint(), 20, roadNetwork, timestamp,emission,transition));
 
             /////////matching print/////////////
             //System.out.println("매칭완료 " + matchingPointArrayList.get(timestamp-1));
@@ -139,51 +140,6 @@ public class Main {
     public static Double coordDistanceofPoints(Point a, Point b) {
         return Math.sqrt(Math.pow(a.getX() - b.getX(), 2) + Math.pow(a.getY() - b.getY(), 2));
     }//유클리드 거리 구하기
-
-    public static ArrayList<Candidate> findRadiusCandidate(ArrayList<GPSPoint> gpsPointArrayList, ArrayList<Candidate> matchingPointArrayList, Point center, Integer Radius, RoadNetwork roadNetwork, int timestamp) {
-        ArrayList<Candidate> resultCandidate = new ArrayList<>();
-        for (int i = 0; i < roadNetwork.linkArrayList.size(); i++) {
-            double startX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getX();
-            double startY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getY();
-            double endX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getX();
-            double endY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getY();
-
-            Vector2D vectorFromStartToCenter = new Vector2D(center.getX() - startX, center.getY() - startY);
-            Vector2D vectorFromEndToCenter = new Vector2D(center.getX() - endX, center.getY() - endY);
-            Vector2D vectorFromEndToStart = new Vector2D(startX - endX, startY - endY);
-
-            double dotProduct1 = vectorFromStartToCenter.dot(vectorFromEndToStart);
-            double dotProduct2 = vectorFromEndToCenter.dot(vectorFromEndToStart);
-
-            if (dotProduct1 * dotProduct2 <= 0) {
-                //System.out.println("어허");
-                //System.out.println("dot Product : "+dotProduct1+", "+dotProduct2);
-                Candidate candidate = new Candidate();
-                candidate.setInvolvedLink(roadNetwork.linkArrayList.get(i));
-                Vector2D vectorStart = new Vector2D(startX, startY);
-                Vector2D vectorC = new Vector2D(center.getX(), center.getY()); //원점에서 시작해 center로의 vector
-                Vector2D vectorH = vectorStart.getAdded(vectorFromEndToStart.getMultiplied(
-                        (vectorC.getSubtracted(vectorStart).dot(vectorFromEndToStart))
-                                / Math.pow(vectorFromEndToStart.getLength(), 2))); //원점에서 시작해 수선의 발로의 vector
-                candidate.setPoint(new Point(vectorH.getX(), vectorH.getY())); //수선의 발 vector의 x와 y값을 candidate의 point로 대입
-                if (coordDistanceofPoints(center, candidate.getPoint()) > Radius) continue;
-                resultCandidate.add(candidate);
-//////////////////////////////////////////
-                //candidate마다 ep, tp 구하기
-                calculationEP(candidate, center, timestamp);
-                calculationTP(candidate, matchingPointArrayList, center, gpsPointArrayList, timestamp, roadNetwork);
-
-                for (Candidate c: matchingPointArrayList) {
-                    emission.Emission_Median(c);
-                    transition.Transition_Median(c);
-                }
-
-            }
-        }
-        calculationEPTP(resultCandidate, matchingPointArrayList, timestamp);
-
-        return resultCandidate;
-    }
 
     // EP클래스 가서 캔디데이트 마다 값 구하고 저장
     public static void calculationEP(Candidate cand, Point center, int timestamp) {
@@ -240,28 +196,7 @@ public class Main {
         matchingPointArrayList.add(matchingCandidate);
 
         return matchingCandidate;
-
     }
 
-    public static ArrayList<Link> AdjacentLink(Link mainLink,RoadNetwork roadNetwork,ArrayList<AdjacentNode> heads){
-        int startNode=mainLink.getStartNodeID();
-        int endNode = mainLink.getEndNodeID();
-        ArrayList<Link> secondLink = new ArrayList<>();
-        //ArrayList<Node> startAdjacentNode = new ArrayList<>();
-        //ArrayList<Node> endAdjacentNode = new ArrayList<>();
-        AdjacentNode pointer = heads.get(roadNetwork.nodeArrayList.get(startNode).getNodeID()).getNextNode();
-        while(true){
-            if(pointer==null) break;
-            secondLink.add(roadNetwork.getLink(pointer.getNode().getNodeID(),startNode));
-            pointer=pointer.getNextNode();
-        }
-        pointer = heads.get(roadNetwork.nodeArrayList.get(endNode).getNodeID()).getNextNode();
-        while(true){
-            if(pointer==null) break;
-            secondLink.add(roadNetwork.getLink(pointer.getNode().getNodeID(),endNode));
-            pointer=pointer.getNextNode();
-        }
-        return secondLink;
-    }
 
 }

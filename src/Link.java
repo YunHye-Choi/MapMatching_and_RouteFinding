@@ -145,4 +145,25 @@ public class Link {
             }
         } return n;
     }
+
+    public static ArrayList<Link> AdjacentLink(Link mainLink,RoadNetwork roadNetwork,ArrayList<AdjacentNode> heads){
+        int startNode=mainLink.getStartNodeID();
+        int endNode = mainLink.getEndNodeID();
+        ArrayList<Link> secondLink = new ArrayList<>();
+        //ArrayList<Node> startAdjacentNode = new ArrayList<>();
+        //ArrayList<Node> endAdjacentNode = new ArrayList<>();
+        AdjacentNode pointer = heads.get(roadNetwork.nodeArrayList.get(startNode).getNodeID()).getNextNode();
+        while(true){
+            if(pointer==null) break;
+            secondLink.add(roadNetwork.getLink(pointer.getNode().getNodeID(),startNode));
+            pointer=pointer.getNextNode();
+        }
+        pointer = heads.get(roadNetwork.nodeArrayList.get(endNode).getNodeID()).getNextNode();
+        while(true){
+            if(pointer==null) break;
+            secondLink.add(roadNetwork.getLink(pointer.getNode().getNodeID(),endNode));
+            pointer=pointer.getNextNode();
+        }
+        return secondLink;
+    }
 }

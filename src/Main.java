@@ -1,9 +1,4 @@
-//import com.sun.deploy.util.SyncAccess;
 import javafx.util.Pair;
-/*import org.knowm.xchart.QuickChart;
-import org.knowm.xchart.SwingWrapper;
-import org.knowm.xchart.XYChart;
-import javax.swing.SwingWorker;*/
 
 import java.io.*;
 import java.lang.reflect.Array;

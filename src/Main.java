@@ -11,14 +11,10 @@ public class Main {
     private static Emission emission = new Emission();
     private static Transition transition = new Transition();
     private static int wSize = 3; //윈도사이즈는 3!!!!!!
-    //MySwingWorker mySwingWorker;
-    /*그림 그려 주는 tool
-    private static SwingWrapper<XYChart> sw;
-    private static XYChart chart;*/
 
     public static void main(String[] args) throws IOException, InterruptedException {
         System.out.println("===== [YSY] Map-matching PilotTest 1-2 =====");
-        int testNo = 2; // 여기만 바꿔주면 됨 (1-세정, 2-유네, 3-유림)
+        int testNo = 4; // 여기만 바꿔주면 됨 (1-세정, 2-유네, 3-유림, 4-가중치)
         FileIO fileIO = new FileIO(testNo);
         // 파일에서 읽어와 도로네트워크 생성
         RoadNetwork roadNetwork = fileIO.generateRoadNetwork();
@@ -54,23 +50,31 @@ public class Main {
             }
         }
 
+        /* 여기부터 dijkstra~ ShortestRoute -> dijkstra */
+        //before get map matching algorithm
+        ShortestRoute shortestPath = new ShortestRoute();
+        //시작, 끝 노드 ID!
+        int start = 0;
+        int end = 34;
+
+        ArrayList<Integer> dijkstra_route = shortestPath.dijkstra(roadNetwork, heads, start, end); //dijkstra
+        ArrayList<Integer> aStart_route = shortestPath.astar(roadNetwork, heads, start, end); //width A*
+        ArrayList<Integer> llf_route = shortestPath.longest_leg_first(roadNetwork, heads, start, end); //longest leg first! (llf)
+        ArrayList<Integer> ft_route = shortestPath.fewest_turn(roadNetwork, heads, start, end); //fewest turn
+
+        ArrayList<Integer> result_route = dijkstra_route;
+        for (int i = 0; i < result_route.size(); i++) {
+            System.out.println(result_route.get(i) + " ");
+        }
+
         // GPS points와 routePoints를 저장할 ArrayList생성
         ArrayList<GPSPoint> gpsPointArrayList = new ArrayList<>();
         ArrayList<Point> routePointArrayList; // 실제 경로의 points!
         ArrayList<Candidate> matchingCandiArrayList = new ArrayList<>();
 
         // test 번호에 맞는 routePoints생성
-        routePointArrayList = roadNetwork.routePoints(testNo);
+        routePointArrayList = roadNetwork.routePoints(testNo, result_route);
 
-        /*
-        for(int i=0; i<gpsPointArrayList.size(); i++){
-            emission.Emission_Median(gpsPointArrayList.get(i), routePointArrayList.get(i));
-            if(i>0){
-                transition.Transition_Median(gpsPointArrayList.get(i-1), gpsPointArrayList.get(i),routePointArrayList.get(i-1), routePointArrayList.get(i));
-            }//매칭된 point로 해야하나.. 실제 point로 해야하나.. 의문?
-            //중앙값 저장
-        }
-        */
 
         // window size만큼의 t-window, ... , t-1, t에서의 candidates의 arrayList
         ArrayList<ArrayList<Candidate>> arrOfCandidates = new ArrayList<>();

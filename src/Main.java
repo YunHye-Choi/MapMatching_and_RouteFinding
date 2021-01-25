@@ -62,7 +62,7 @@ public class Main {
         ArrayList<Integer> llf_route = shortestPath.longest_leg_first(roadNetwork, heads, start, end); //longest leg first! (llf)
         ArrayList<Integer> ft_route = shortestPath.fewest_turn(roadNetwork, heads, start, end); //fewest turn
 
-        ArrayList<Integer> result_route = dijkstra_route;
+        ArrayList<Integer> result_route = ft_route;
         for (int i = 0; i < result_route.size(); i++) {
             System.out.println(result_route.get(i) + " ");
         }
@@ -79,7 +79,7 @@ public class Main {
         // window size만큼의 t-window, ... , t-1, t에서의 candidates의 arrayList
         ArrayList<ArrayList<Candidate>> arrOfCandidates = new ArrayList<>();
         ArrayList<GPSPoint> subGPSs = new ArrayList<>();
-        // ArrayList<Point> subRPA = new ArrayList<>(); // 비터비 내부 보려면 이것도 주석 해제해야! (subRoadPointArrayList)
+        //ArrayList<Point> subRPA = new ArrayList<>(); // 비터비 내부 보려면 이것도 주석 해제해야! (subRoadPointArrayList)
         // GPSPoints 생성
         int timestamp = 0;
         //System.out.println("여기부터 생성된 gps point~~");
@@ -93,11 +93,6 @@ public class Main {
             candidates.addAll(Candidate.findRadiusCandidate(gpsPointArrayList, matchingCandiArrayList,
                     gpsPoint.getPoint(), 20, roadNetwork, timestamp,emission,transition));
 
-            /////////matching print/////////////
-            //System.out.println("매칭완료 " + matchingPointArrayList.get(timestamp-1));
-
-            //System.out.println();
-
             emission.Emission_Median(matchingCandiArrayList.get(timestamp-1));
             if(timestamp > 1){
                 transition.Transition_Median(matchingCandiArrayList.get(timestamp-1));
@@ -107,30 +102,32 @@ public class Main {
             ///////////// FSW VITERBI /////////////
             subGPSs.add(gpsPoint);
             arrOfCandidates.add(candidates);
-            // subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
+            //subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
             if (subGPSs.size() == wSize) {
-                FSWViterbi.generateMatched_yhtp(wSize, arrOfCandidates, tp_matrix); // 윤혜tp 비터비
-                FSWViterbi.generateMatched_sjtp(wSize, arrOfCandidates, gpsPointArrayList, transition, timestamp, roadNetwork); // 세정tp로 비터비
+                FSWViterbi.generateMatched(tp_matrix , wSize, arrOfCandidates,
+                        gpsPointArrayList, /*subRPA, subGPSs, */transition, timestamp, roadNetwork, "yh");
+                FSWViterbi.generateMatched(tp_matrix , wSize, arrOfCandidates,
+                        gpsPointArrayList, /*subRPA, subGPSs, */transition, timestamp, roadNetwork, "sj");
                 subGPSs.clear();
                 arrOfCandidates.clear();
-                // subRPA.clear(); // 비터비 내부 보려면 이것도 주석 해제해야!
+                //subRPA.clear(); // 비터비 내부 보려면 이것도 주석 해제해야!
                 subGPSs.add(gpsPoint);
                 arrOfCandidates.add(candidates);
-                // subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
+                //subRPA.add(point); // 비터비 내부 보려면 이것도 주석 해제해야!
             }
             ///////////////////////////////////////
         }
         // yhtp 이용해서 구한 subpath 출력
-        FSWViterbi.printSubpath_yhtp (wSize);
+        FSWViterbi.printSubpath (wSize, "yh");
 
         // sjtp 이용해서 구한 subpath 출력
-        FSWViterbi.printSubpath_sjtp (wSize);
+        FSWViterbi.printSubpath (wSize, "sj");
 
         // origin->생성 gps-> yhtp 이용해서 구한 matched 출력 및 정확도 확인
-        FSWViterbi.test_data2_yhtp(routePointArrayList, gpsPointArrayList);
+        FSWViterbi.test_data2(routePointArrayList, gpsPointArrayList, "yh");
 
         // origin->생성 gps-> sjtp 이용해서 구한 matched 출력 및 정확도 확인
-        FSWViterbi.test_data2_sjtp(routePointArrayList, gpsPointArrayList);
+        FSWViterbi.test_data2(routePointArrayList, gpsPointArrayList, "sj");
 
         // 윤혜tp와 세정tp비교!
         FSWViterbi.compareYhtpAndSjtp();

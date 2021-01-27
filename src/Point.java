@@ -4,6 +4,15 @@ import java.util.Vector;
 public class Point {
     private Double x; // x좌표
     private Double y; // y좌표
+    private int linkID; // 1-2에서만 필요
+
+    public int getLinkID() {
+        return linkID;
+    }
+
+    public void setLinkID(int linkID) {
+        this.linkID = linkID;
+    }
 
     // String을 파라미터로 가지는 생성자
     public Point (String x, String y){

@@ -30,7 +30,7 @@ public class FSWViterbi {
             for (Candidate nc : next_candidates) {
                 maximum_prob = 0;
 
-                System.out.println("  nc: " + nc.getPoint() + "/ ep: " + nc.getEp());
+                //System.out.println("  nc: " + nc.getPoint() + "/ ep: " + nc.getEp());
                 // 현재 candidate를 하나씩 순회하며
                 for (Candidate cc : curr_candidates) {
                     double tp = 0;
@@ -135,7 +135,7 @@ public class FSWViterbi {
                     + matched.get(i).getPoint() + ", id: "
                     + matched.get(i).getInvolvedLink().getLinkID() + "]");
 
-            /*// 다익스트라
+            // 다익스트라
             if (i >= 0 && i <= 19 && matched.get(i).getInvolvedLink().getLinkID() == 0) {
                 success_sum++;
             } else if (i >= 20 && i <= 40 && matched.get(i).getInvolvedLink().getLinkID() == 3) {
@@ -152,7 +152,7 @@ public class FSWViterbi {
                 success_sum++;
             } else if (i >= 146 && i <= 165 && matched.get(i).getInvolvedLink().getLinkID() == 53) {
                 success_sum++;
-            }*/
+            }
 
             /*
             // 에이스타

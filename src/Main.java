@@ -62,9 +62,9 @@ public class Main {
         ArrayList<Integer> llf_route = shortestPath.longest_leg_first(roadNetwork, heads, start, end); //longest leg first! (llf)
         ArrayList<Integer> ft_route = shortestPath.fewest_turn(roadNetwork, heads, start, end); //fewest turn
 
-        ArrayList<Integer> result_route = ft_route;
+        ArrayList<Integer> result_route = dijkstra_route;
         for (int i = 0; i < result_route.size(); i++) {
-            System.out.println(result_route.get(i) + " ");
+            System.out.println(result_route.get(i) + ", weight: " + roadNetwork.getLink(result_route.get(i)).getWeight());
         }
 
         // GPS points와 routePoints를 저장할 ArrayList생성
@@ -82,10 +82,11 @@ public class Main {
         //ArrayList<Point> subRPA = new ArrayList<>(); // 비터비 내부 보려면 이것도 주석 해제해야! (subRoadPointArrayList)
         // GPSPoints 생성
         int timestamp = 0;
+        int gpsGenMode = 1; // mode 1: 원래 하던대로 (표준편차 4) | 2: x혹은 y좌표만 uniform하게 | 3. x, y 모두 uniform하게 | 4: 교수님이 말한 평균 4 방식
         //System.out.println("여기부터 생성된 gps point~~");
         System.out.println("Fixed Sliding Window Viterbi (window size: 3)");
         for (Point point : routePointArrayList) {
-            GPSPoint gpsPoint = new GPSPoint(timestamp, point);
+            GPSPoint gpsPoint = new GPSPoint(timestamp, point, gpsGenMode, 10);
             gpsPointArrayList.add(gpsPoint);
             timestamp++;
             //System.out.println(gpsPoint); //gps point 제대로 생성 되는지 확인차 넣음

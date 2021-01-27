@@ -6,6 +6,16 @@ public class Link {
     private int endNodeID; // Link의 End Node
     private Double weight; // Link의 weight (길이)
     private int width;
+
+    public String getItLooksLike() {
+        return itLooksLike;
+    }
+
+    public void setItLooksLike(String itLooksLike) {
+        this.itLooksLike = itLooksLike;
+    }
+
+    private String itLooksLike;
     // Link가 포함하고 있는 node List
     //private ArrayList<Point> involvingPointList = new ArrayList<>();
 

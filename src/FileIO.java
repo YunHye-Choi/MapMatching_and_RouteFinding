@@ -1,11 +1,27 @@
 import java.io.*;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class FileIO {
     // 파일이 저장된 path name
     // 세정: 1, 윤혜: 2, 유림: 3
     String directoryName = "data";
+    private final ArrayList<Integer> horIDList = new ArrayList<>(
+            Arrays.asList(1, 3, 5, 7, 9, 11,
+                    13, 25, 27, 29, 20,
+                    22, 24, 27, 28, 30, 31,
+                    33, 34, 36, 38, 40, 41,
+                    43, 45, 47, 50, 52, 53));
+    private final ArrayList<Integer> verIDList = new ArrayList<>(
+            Arrays.asList(0, 2, 4, 6, 8,
+                    12, 14, 16, 18,
+                    21, 23, 26, 29,
+                    32, 35, 37, 34,
+                    42, 44, 46, 48, 51,
+                    54, 55, 56, 57, 58));
+    private final ArrayList<Integer> diaIDList = new ArrayList<>(
+            Arrays.asList(10 ,25, 49));
     public FileIO (int testNo) {
         directoryName += testNo;
     }
@@ -54,7 +70,13 @@ public class FileIO {
 
             // link 생성
             Link link = new Link(lineArray[0], lineArray[1], lineArray[2], weight, lineArray[3]); // add width
-
+            if (horIDList.contains(link.getLinkID())) {
+                link.setItLooksLike("hor");
+            } else if (diaIDList.contains(link.getLinkID())) {
+                link.setItLooksLike("dia");
+            } else {
+                link.setItLooksLike("ver");
+            }
             /*
             //involving points 구하기
 

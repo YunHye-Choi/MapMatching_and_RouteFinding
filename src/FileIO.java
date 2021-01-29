@@ -74,8 +74,10 @@ public class FileIO {
                 link.setItLooksLike("hor");
             } else if (diaIDList.contains(link.getLinkID())) {
                 link.setItLooksLike("dia");
-            } else {
+            } else if (verIDList.contains(link.getLinkID())){
                 link.setItLooksLike("ver");
+            } else {
+                link.setItLooksLike("꽝입니다");
             }
             /*
             //involving points 구하기

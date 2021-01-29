@@ -37,6 +37,7 @@ public class FSWViterbi {
                     if (tp_type.equals("yh")) {
                         tp = tp_matrix[cc.getInvolvedLink().getLinkID()][nc.getInvolvedLink().getLinkID()];
                     } else {
+                        System.out.println("[FSWViterbi] cc:" + cc);
                         tp = transition.Transition_pro(gpsPointArrayList.get(timeStamp-1).getPoint(), gpsPointArrayList.get(timeStamp-3).getPoint(), cc, nc, roadNetwork);
                     }
                     double prob = tp * nc.getEp();

@@ -82,18 +82,20 @@ public class Main {
         //ArrayList<Point> subRPA = new ArrayList<>(); // 비터비 내부 보려면 이것도 주석 해제해야! (subRoadPointArrayList)
         // GPSPoints 생성
         int timestamp = 0;
-        int gpsGenMode = 1; // mode 1: 원래 하던대로 (표준편차 4) | 2: x혹은 y좌표만 uniform하게 | 3. x, y 모두 uniform하게 | 4: 교수님이 말한 평균 4 방식
-        //System.out.println("여기부터 생성된 gps point~~");
+
+        // 1: 원래 하던대로 (표준편차 4)  | 2: x혹은 y좌표만 uniform하게(hor, ver, dia에 따라서)
+        // 3: x, y 모두 uniform하게     | 4: 교수님이 말한 평균 4 방식
+        int gpsGenMode = 2;
         System.out.println("Fixed Sliding Window Viterbi (window size: 3)");
         for (Point point : routePointArrayList) {
-            GPSPoint gpsPoint = new GPSPoint(timestamp, point, gpsGenMode, 10);
+            GPSPoint gpsPoint = new GPSPoint(timestamp, point, gpsGenMode, 3, roadNetwork.getLink(point.getLinkID()).getItLooksLike());
             gpsPointArrayList.add(gpsPoint);
             timestamp++;
             //System.out.println(gpsPoint); //gps point 제대로 생성 되는지 확인차 넣음
             ArrayList<Candidate> candidates = new ArrayList<>();
             candidates.addAll(Candidate.findRadiusCandidate(gpsPointArrayList, matchingCandiArrayList,
                     gpsPoint.getPoint(), 20, roadNetwork, timestamp,emission,transition));
-
+            System.out.println("[MAIN] candidates:" + candidates);
             emission.Emission_Median(matchingCandiArrayList.get(timestamp-1));
             if(timestamp > 1){
                 transition.Transition_Median(matchingCandiArrayList.get(timestamp-1));

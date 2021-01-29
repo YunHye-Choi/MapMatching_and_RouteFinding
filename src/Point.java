@@ -14,7 +14,14 @@ public class Point {
         this.linkID = linkID;
     }
 
-    // String을 파라미터로 가지는 생성자
+    // LinkID도 파라미터로 받는 생성자
+    public Point (Double x, Double y, int linkID){
+        this.x = x;
+        this.y = y;
+        this.linkID = linkID;
+    }
+
+    // 스트링으로 파라미터로 받는 생성자
     public Point (String x, String y){
         this.x = Double.parseDouble(x);
         this.y = Double.parseDouble(y);

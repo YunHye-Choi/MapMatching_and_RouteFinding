@@ -6,6 +6,7 @@ public class Link {
     private int endNodeID; // Link의 End Node
     private Double weight; // Link의 weight (길이)
     private int width;
+    private String itLooksLike; // 수평: hor, 수직: ver, 대각선: dia
 
     public String getItLooksLike() {
         return itLooksLike;
@@ -14,10 +15,6 @@ public class Link {
     public void setItLooksLike(String itLooksLike) {
         this.itLooksLike = itLooksLike;
     }
-
-    private String itLooksLike;
-    // Link가 포함하고 있는 node List
-    //private ArrayList<Point> involvingPointList = new ArrayList<>();
 
     //////생성자, getter, setter, toString//////
     // int로 ID 파라미터 받음

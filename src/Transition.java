@@ -16,19 +16,25 @@ public class Transition {
         //a,b가 같은 링크일 때 유클리드 거리
         if(pre_matching.getInvolvedLink() == cand.getInvolvedLink())
             routeDistance = coordDistanceofPoints(pre_matching.getPoint(), cand.getPoint());
-
         //a,b가 다른 링크일 때
         else {
             //case 1: a,b가 다른 링크이고 두 링크가 맞닿아 있을때
-            if(pre_matching.getInvolvedLink().isLinkNextTo(roadNetwork, cand.getInvolvedLink().getLinkID()) == true){
-                Point linked_point = new Point(0.0, 0.0); //두 링크가 만나는 점
-                linked_point = pre_matching.getInvolvedLink().isLinkNextToPoint(roadNetwork, cand.getInvolvedLink());
-                routeDistance = coordDistanceofPoints(pre_matching.getPoint(), linked_point) + coordDistanceofPoints(cand.getPoint(), linked_point);
-                //a와 두 링크가 만나는 점까지 거리 + b와 두 링크가 만나는 점까지 거리
-            }
-            //case 2: a,b가 다른 링크이고 두 링크가 맞닿아 있지 않을때
-            else{
-                routeDistance = -1;// false 갈 수 없음, 후보 탈락
+            if(pre_matching.getInvolvedLink() == null) {
+                System.out.println("❌ null pointer exception !!!! pre-matched: " + pre_matching);
+                System.out.println("candidate: " + cand);
+                routeDistance = -1;
+            } else {
+                if(pre_matching.getInvolvedLink().isLinkNextTo(roadNetwork, cand.getInvolvedLink().getLinkID())){
+                    System.out.println("pre-matched: " + pre_matching +"\n candidate: " + cand);
+                    Point linked_point = new Point(0.0, 0.0); //두 링크가 만나는 점
+                    linked_point = pre_matching.getInvolvedLink().isLinkNextToPoint(roadNetwork, cand.getInvolvedLink());
+                    routeDistance = coordDistanceofPoints(pre_matching.getPoint(), linked_point) + coordDistanceofPoints(cand.getPoint(), linked_point);
+                    //a와 두 링크가 만나는 점까지 거리 + b와 두 링크가 만나는 점까지 거리
+                }
+                //case 2: a,b가 다른 링크이고 두 링크가 맞닿아 있지 않을때
+                else{
+                    routeDistance = -1;// false 갈 수 없음, 후보 탈락
+                }
             }
         }
         return routeDistance;

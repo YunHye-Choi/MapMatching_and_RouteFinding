@@ -34,21 +34,10 @@ public class Main {
             }
         }
 
-        // Link와 Node를 바탕으로 Adjacent List 구축
-        ArrayList<AdjacentNode> heads = new ArrayList<>();
-        for (int i = 0; i < roadNetwork.nodeArrayList.size(); i++) {
-            AdjacentNode headNode = new AdjacentNode(roadNetwork.nodeArrayList.get(i));
-            heads.add(headNode);
-
-            List<Pair<Link, Integer>> adjacentLink = roadNetwork.getLink1(headNode.getNode().getNodeID());
-            if (adjacentLink.size() == 0) continue;
-            AdjacentNode ptr = headNode;
-            for (int j = 0; j < adjacentLink.size(); j++) {
-                AdjacentNode addNode = new AdjacentNode(roadNetwork.getNode(adjacentLink.get(j).getValue()), adjacentLink.get(j).getKey());
-                ptr.setNextNode(addNode);
-                ptr = ptr.getNextNode();
-            }
-        }
+        // Link와 Node를 바탕으로 Adjacent List 구축 이거 함수 만들어서 AdjacentNode class에 넣어버림
+        ArrayList<AdjacentNode> heads = AdjacentNode.ridAdjacentNode(roadNetwork);
+        //Link와 Node를 바탕으로 Adjacent List 구축 이거도 함수 만들어서 AdjacentLink class에 넣을거임
+        ArrayList<AdjacentLink> lheads = AdjacentLink.ridAdjacentLink(roadNetwork);
 
         /* 여기부터 dijkstra~ ShortestRoute -> dijkstra */
         //before get map matching algorithm
@@ -62,7 +51,7 @@ public class Main {
         ArrayList<Integer> llf_route = shortestPath.longest_leg_first(roadNetwork, heads, start, end); //longest leg first! (llf)
         ArrayList<Integer> ft_route = shortestPath.fewest_turn(roadNetwork, heads, start, end); //fewest turn
 
-        ArrayList<Integer> result_route = dijkstra_route;
+        ArrayList<Integer> result_route = aStart_route;
         for (int i = 0; i < result_route.size(); i++) {
             System.out.println(result_route.get(i) + " ");
         }

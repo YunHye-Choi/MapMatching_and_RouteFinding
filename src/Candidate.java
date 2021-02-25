@@ -103,27 +103,36 @@ public class Candidate {
     public String toStringOnlyPoint() {
         return point.toString();
     }
+
     public static ArrayList<Candidate> findRadiusCandidate(ArrayList<GPSPoint> gpsPointArrayList,
                                                            ArrayList<Candidate> matchingPointArrayList, Point center,
                                                            Integer Radius, RoadNetwork roadNetwork, int timestamp,
                                                            Emission emission, Transition transition) {
         ArrayList<Candidate> resultCandidate = new ArrayList<>();
+        /*
+        우리의 코드가 매우 느린 이유 -> 아래에서 모든 link를 탐색하기 때문
+        */
+        ArrayList<Link> adjcentLink = new ArrayList<>();
         for (int i = 0; i < roadNetwork.linkArrayList.size(); i++) {
+            //link의 start, end node의 x,y좌표 저장
             double startX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getX();
             double startY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getStartNodeID()).getCoordinate().getY();
             double endX = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getX();
             double endY = roadNetwork.nodeArrayList.get(roadNetwork.linkArrayList.get(i).getEndNodeID()).getCoordinate().getY();
 
+            //계산에 필요한 vector 저장
             Vector2D vectorFromStartToCenter = new Vector2D(center.getX() - startX, center.getY() - startY);
             Vector2D vectorFromEndToCenter = new Vector2D(center.getX() - endX, center.getY() - endY);
             Vector2D vectorFromEndToStart = new Vector2D(startX - endX, startY - endY);
 
+            //수선의 발을 내릴 수 있는지 확인하기 위한 dotProduct 생산
             double dotProduct1 = vectorFromStartToCenter.dot(vectorFromEndToStart);
             double dotProduct2 = vectorFromEndToCenter.dot(vectorFromEndToStart);
 
+            //두 각도의 곱이 90도 이상이다 => 수선의 발을 내릴 수 있다.
+            //두 각도의 곱이 90도 이상일 경우에만 본 코드가 들어옴
+            //여기 확인해보기!!!!
             if (dotProduct1 * dotProduct2 <= 0) {
-                //System.out.println("어허");
-                //System.out.println("dot Product : "+dotProduct1+", "+dotProduct2);
                 Candidate candidate = new Candidate();
                 candidate.setInvolvedLink(roadNetwork.linkArrayList.get(i));
                 Vector2D vectorStart = new Vector2D(startX, startY);
@@ -134,8 +143,6 @@ public class Candidate {
                 candidate.setPoint(new Point(vectorH.getX(), vectorH.getY())); //수선의 발 vector의 x와 y값을 candidate의 point로 대입
                 if (Main.coordDistanceofPoints(center, candidate.getPoint()) > Radius) continue;
                 resultCandidate.add(candidate);
-//////////////////////////////////////////
-                //candidate마다 ep, tp 구하기
                 Main.calculationEP(candidate, center, timestamp);
                 Main.calculationTP(candidate, matchingPointArrayList, center, gpsPointArrayList, timestamp, roadNetwork);
 

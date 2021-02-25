@@ -43,6 +43,7 @@ public class RoadNetwork {
         // 탐색에 실패한 경우 nodeId가 -1인 Link반환
         return new Link(-1,-1,-1,(double)-1);
     }
+
     // nodeID_s를 start node ID로, nodeID_e를 end node id로 가지는 가지는 link반환
     // 혹은 nodeID_e를 start node ID로, nodeID_s를 end node id로 가지는 가지는 link반환
     public Link getLink (int nodeID_s, int nodeID_e) {
@@ -55,6 +56,19 @@ public class RoadNetwork {
         // 탐색에 실패한 경우 nodeId가 -1인 Link반환
         return new Link(-1,-1,-1,(double)-1);
     }
+
+    //입력받은 link의 양끝 node중 하나의 node라도 겹치는 link들을 반환
+    public ArrayList<Link> giveNodegetLink(Link link){
+        ArrayList<Link> result = new ArrayList<>();
+        for(Link currentLink : linkArrayList){
+            if((currentLink.getStartNodeID()==link.getStartNodeID())||(currentLink.getEndNodeID()==link.getStartNodeID())||
+            (currentLink.getStartNodeID()==link.getEndNodeID())||(currentLink.getEndNodeID()==link.getEndNodeID()))
+                result.add(currentLink);
+        }
+        return result;
+    }
+
+    //링크의 시작점이나 끝점이 입력받은 nodeID와 같은 링크를 반환 nodeid는 왜 반환하는지 잘 모르게써
     List<Pair<Link,Integer>> getLink1 (int nodeID) {
         List<Pair<Link,Integer>> pairs = new ArrayList<>();
         for (Link currLink : linkArrayList) {

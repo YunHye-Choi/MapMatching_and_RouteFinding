@@ -1,3 +1,8 @@
+import javafx.util.Pair;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class AdjacentNode {
     private Node node;
     private Link adjacentLink;
@@ -45,6 +50,24 @@ public class AdjacentNode {
 
     public Link getAdjacentLink() {
         return adjacentLink;
+    }
+
+    public static ArrayList<AdjacentNode> ridAdjacentNode(RoadNetwork roadNetwork){
+        ArrayList<AdjacentNode> heads = new ArrayList<>();
+        for (int i = 0; i < roadNetwork.nodeArrayList.size(); i++) {
+            AdjacentNode headNode = new AdjacentNode(roadNetwork.nodeArrayList.get(i));
+            heads.add(headNode);
+
+            List<Pair<Link, Integer>> adjacentLink = roadNetwork.getLink1(headNode.getNode().getNodeID());
+            if (adjacentLink.size() == 0) continue;
+            AdjacentNode ptr = headNode;
+            for (int j = 0; j < adjacentLink.size(); j++) {
+                AdjacentNode addNode = new AdjacentNode(roadNetwork.getNode(adjacentLink.get(j).getValue()), adjacentLink.get(j).getKey());
+                ptr.setNextNode(addNode);
+                ptr = ptr.getNextNode();
+            }
+        }
+        return heads;
     }
 
 }
